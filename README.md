@@ -59,8 +59,7 @@ BIAI CRM delivers:
 - [12. Feature Matrix & Task Completion](#12-feature-matrix--task-completion)
 - [13. Complete API Reference](#13-complete-api-reference)
 - [14. Problems Faced & Solutions](#14-problems-faced--solutions)
-- [15. 5-Minute Loom Presentation Script](#15-5-minute-loom-presentation-script)
-- [16. Developer Signature](#16-developer-signature)
+- [15. Developer Signature](#15-developer-signature)
 
 ---
 
@@ -399,45 +398,7 @@ model Enquiry {
 
 ---
 
-## 15. 5-Minute Loom Presentation Script
-
-Use this exact flow when recording your Loom video:
-
-- **Minute 0:00 - 1:00: Problem & Core Idea**
-  - Introduce yourself and state the problem: BIAI receives unstructured messages across WhatsApp, Facebook, phone calls, and forms in mixed Bangla and Banglish. Leads get lost and counselors miss follow-ups.
-  - State your core solution: An AI-native CRM that extracts details automatically, suggests tone-matched replies, and triages sales from support and spam.
-
-- **Minute 1:00 - 2:30: Live Pipeline Demo on Sample Data**
-  - Show the 5-stage Kanban board loaded with the 20 sample enquiries from `sample-enquiries.csv`.
-  - Highlight the **48h Overdue** badge on stale leads.
-  - Click on **Row 7 (Farzana Rahman)** and show how the AI classified it as **🚨 Urgent Support (bKash verification)** rather than a sales lead.
-  - Click on **Row 16 (Habibur Rahman)** and show the empathetic refund de-escalation reply.
-  - Advance a card from `New` ➔ `Contacted` ➔ `Interested`.
-  - Switch to **Table View** to show high-density sorting.
-
-- **Minute 2:30 - 3:45: AI Quick Intake Demo**
-  - Click the **"AI Quick Intake"** button.
-  - Click the preset for **Rafi Ahmed (Banglish)**: *"Assalamualaikum, apnader 3 day bootcamp er price koto?..."*
-  - Click **"Extract with AI"**. Show how Gemini in under 1 second extracts:
-    - Name: `Rafi Ahmed`
-    - Phone: `01711000001`
-    - Channel: `WhatsApp`
-    - Program: `3-Day Bootcamp`
-    - Tone: `Banglish`
-    - Suggested Reply: A polite, natural Banglish response.
-  - Click **"Save to CRM"** and show it immediately appear in the pipeline.
-
-- **Minute 3:45 - 4:30: AI Weekly Executive Summary (Bonus)**
-  - Click **"AI Weekly Summary"**.
-  - Show Gemini generating an executive report with rendered markdown, analyzing lead distribution, corporate training inquiries, and the list of overdue follow-ups.
-
-- **Minute 4:30 - 5:00: Architecture Decisions & Wrap-up**
-  - Explain why you chose Next.js 15, SQLite with Prisma, Docker containerization, and Gemini 3.5 Flash-Lite (zero-cost, sub-second speed, local database persistence).
-  - Conclude with your readiness for questions and live modifications.
-
----
-
-## 16. Developer Signature
+## 15. Developer Signature
 
 | Information | Details |
 |---|---|
