@@ -42,29 +42,29 @@ export const PipelineColumn: React.FC<PipelineColumnProps> = ({
   const percentage = totalCount > 0 ? Math.round((enquiries.length / totalCount) * 100) : 0;
 
   return (
-    <div className="w-full flex flex-col bg-slate-100/80 rounded-2xl p-2.5 sm:p-3 border border-slate-200/90 shadow-2xs">
-      {/* Column Header */}
-      <div className="flex items-center justify-between px-2.5 py-2 mb-2 bg-white/90 rounded-xl border border-slate-200/80 shadow-2xs">
+    <div className="w-full h-full max-h-full flex flex-col bg-slate-100/90 rounded-2xl p-2 sm:p-2.5 border border-slate-200/90 shadow-2xs overflow-hidden">
+      {/* Column Header (Fixed, won't scroll) */}
+      <div className="flex items-center justify-between px-2.5 py-1.5 mb-2 bg-white/90 rounded-xl border border-slate-200/80 shadow-2xs shrink-0">
         <div className="flex items-center space-x-2">
-          <span className={`w-2.5 h-2.5 rounded-full ${meta.dot} shadow-xs shrink-0`} />
-          <h3 className="font-bold text-slate-900 text-sm tracking-tight truncate">{stage}</h3>
+          <span className={`w-2 h-2 rounded-full ${meta.dot} shadow-xs shrink-0`} />
+          <h3 className="font-bold text-slate-900 text-xs sm:text-sm tracking-tight truncate">{stage}</h3>
         </div>
         <div className="flex items-center space-x-1.5 shrink-0">
-          <span className="text-[11px] text-slate-400 font-medium">{percentage}%</span>
-          <span className="text-xs font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200">
+          <span className="text-[10px] text-slate-400 font-medium">{percentage}%</span>
+          <span className="text-xs font-bold text-slate-800 bg-slate-100 px-1.5 py-0.2 rounded-full border border-slate-200">
             {enquiries.length}
           </span>
         </div>
       </div>
 
-      {/* Cards Scroll Container: Vertical scroll only, fills column width */}
-      <div className="flex-1 overflow-y-auto space-y-2.5 pr-0.5 max-h-[calc(100vh-300px)] min-h-[380px]">
+      {/* Cards Scroll Container: Smooth Independent Inner Box Scrolling */}
+      <div className="flex-1 min-h-0 column-scroll space-y-2.5 pr-1 pb-1">
         {enquiries.length === 0 ? (
-          <div className="h-40 border-2 border-dashed border-slate-200/80 rounded-xl flex flex-col items-center justify-center p-4 text-center">
+          <div className="h-40 border-2 border-dashed border-slate-200/80 rounded-xl flex flex-col items-center justify-center p-4 text-center my-auto">
             {stage === "Paid" ? (
-              <CheckCircle2 className="w-7 h-7 text-emerald-400 mb-1" />
+              <CheckCircle2 className="w-6 h-6 text-emerald-400 mb-1" />
             ) : (
-              <Inbox className="w-7 h-7 text-slate-300 mb-1" />
+              <Inbox className="w-6 h-6 text-slate-300 mb-1" />
             )}
             <p className="text-xs font-semibold text-slate-500">No leads in {stage}</p>
             <p className="text-[10px] text-slate-400 mt-0.5">

@@ -17,16 +17,15 @@ export const PipelineBoard: React.FC<PipelineBoardProps> = ({
   onSelectEnquiry,
   onAdvanceStage,
 }) => {
-  // Mobile stage tab selection
   const [activeMobileStage, setActiveMobileStage] = useState<string>("ALL");
 
   return (
-    <div className="w-full">
+    <div className="w-full h-full max-h-full flex flex-col flex-1 min-h-0 overflow-hidden">
       {/* Mobile Stage Selector Tabs (Visible only on <lg screens) */}
-      <div className="lg:hidden flex items-center space-x-1.5 overflow-x-auto pb-3 mb-3 scrollbar-none">
+      <div className="lg:hidden flex items-center space-x-1.5 overflow-x-auto pb-2 mb-2 scrollbar-none shrink-0">
         <button
           onClick={() => setActiveMobileStage("ALL")}
-          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+          className={`px-3 py-1 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
             activeMobileStage === "ALL"
               ? "bg-slate-900 text-white shadow-xs"
               : "bg-white text-slate-600 border border-slate-200"
@@ -41,7 +40,7 @@ export const PipelineBoard: React.FC<PipelineBoardProps> = ({
             <button
               key={stg}
               onClick={() => setActiveMobileStage(stg)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex items-center space-x-1.5 ${
+              className={`px-3 py-1 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex items-center space-x-1.5 ${
                 isSelected
                   ? "bg-emerald-600 text-white shadow-xs"
                   : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
@@ -56,8 +55,8 @@ export const PipelineBoard: React.FC<PipelineBoardProps> = ({
         })}
       </div>
 
-      {/* Desktop & Tablet: Full-Screen 5-Column Responsive Grid */}
-      <div className="hidden lg:grid lg:grid-cols-5 gap-3.5 w-full">
+      {/* Desktop & Tablet: 100% Height, 5-Column Grid, Zero Window Vertical Scroll, Full Inner Scroll */}
+      <div className="hidden lg:grid lg:grid-cols-5 gap-3 w-full h-full max-h-full flex-1 min-h-0 overflow-hidden">
         {STAGES.map((stage) => {
           const stageEnquiries = enquiries.filter((e) => e.status === stage);
           return (
@@ -73,8 +72,8 @@ export const PipelineBoard: React.FC<PipelineBoardProps> = ({
         })}
       </div>
 
-      {/* Mobile Screen: Renders selected stage column (or stacked) */}
-      <div className="lg:hidden space-y-4">
+      {/* Mobile Screen: Stacked/Selected Column */}
+      <div className="lg:hidden flex-1 min-h-0 overflow-hidden">
         {STAGES.filter((stg) => activeMobileStage === "ALL" || activeMobileStage === stg).map((stage) => {
           const stageEnquiries = enquiries.filter((e) => e.status === stage);
           return (

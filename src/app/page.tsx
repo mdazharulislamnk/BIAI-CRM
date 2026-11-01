@@ -155,8 +155,8 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50/70 w-full overflow-x-hidden antialiased">
-      {/* Top Navigation: 100% Full-Screen Width */}
+    <div className="h-screen max-h-screen w-screen overflow-hidden flex flex-col bg-slate-50 antialiased select-none">
+      {/* Top Navigation: Fixed Height (h-13), No page scroll */}
       <Navbar
         onOpenIntake={() => setIsIntakeOpen(true)}
         onOpenSummary={() => setIsSummaryOpen(true)}
@@ -164,13 +164,12 @@ export default function Home() {
         isResetting={isResetting}
       />
 
-      {/* Main Full-Width Container */}
-      <main className="flex-1 w-full px-3 sm:px-6 lg:px-8 py-5">
-        {/* Interactive Stats Overview Bar */}
+      {/* Main Container: 100% of remaining screen height, zero page scroll */}
+      <main className="flex-1 min-h-0 w-full px-3 sm:px-6 py-2.5 flex flex-col overflow-hidden">
+        {/* Compact Stats Overview Bar (Fixed height) */}
         <StatsOverview
           enquiries={enquiries}
           onFilterOverdue={() => {
-            // Filter to overdue leads
             setCategory("ALL");
             setInterest("ALL");
             setStatus("New");
@@ -186,7 +185,7 @@ export default function Home() {
           onResetFilters={handleClearFilters}
         />
 
-        {/* Filter Toolbar with View Mode Switcher */}
+        {/* Compact Filter Toolbar (Fixed height) */}
         <FilterBar
           search={search}
           onSearchChange={setSearch}
@@ -203,26 +202,30 @@ export default function Home() {
           totalFiltered={enquiries.length}
         />
 
-        {/* Main Display: Kanban Board or Table View */}
-        {isLoading && enquiries.length === 0 ? (
-          <div className="h-72 flex flex-col items-center justify-center text-slate-400 space-y-2">
-            <div className="w-8 h-8 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin" />
-            <p className="text-sm font-medium">Loading live pipeline...</p>
-          </div>
-        ) : viewMode === "board" ? (
-          <PipelineBoard
-            enquiries={enquiries}
-            onSelectEnquiry={(e) => setSelectedEnquiry(e)}
-            onAdvanceStage={handleAdvanceStage}
-          />
-        ) : (
-          <TableView
-            enquiries={enquiries}
-            onSelectEnquiry={(e) => setSelectedEnquiry(e)}
-            onAdvanceStage={handleAdvanceStage}
-            onDeleteEnquiry={handleDelete}
-          />
-        )}
+        {/* Main Display Area: Fills exact remaining space, each column scrolls internally */}
+        <div className="flex-1 min-h-0 w-full overflow-hidden flex flex-col">
+          {isLoading && enquiries.length === 0 ? (
+            <div className="h-full flex flex-col items-center justify-center text-slate-400 space-y-2">
+              <div className="w-8 h-8 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin" />
+              <p className="text-sm font-medium">Loading live pipeline...</p>
+            </div>
+          ) : viewMode === "board" ? (
+            <PipelineBoard
+              enquiries={enquiries}
+              onSelectEnquiry={(e) => setSelectedEnquiry(e)}
+              onAdvanceStage={handleAdvanceStage}
+            />
+          ) : (
+            <div className="h-full overflow-y-auto">
+              <TableView
+                enquiries={enquiries}
+                onSelectEnquiry={(e) => setSelectedEnquiry(e)}
+                onAdvanceStage={handleAdvanceStage}
+                onDeleteEnquiry={handleDelete}
+              />
+            </div>
+          )}
+        </div>
       </main>
 
       {/* Modals */}

@@ -8,39 +8,31 @@
     --foreground: #0f172a;
   }
 
-  body {
-    color: var(--foreground);
-    background: var(--background);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  html, body {
+    height: 100%;
+    overflow: hidden;
   }
 }
 
-/* Custom Scrollbars */
-::-webkit-scrollbar {
+/* Custom Scrollbars for Inner Column Boxes */
+.column-scroll {
+  overflow-y: scroll !important;
+  scrollbar-gutter: stable;
+}
+
+.column-scroll::-webkit-scrollbar {
   width: 6px;
-  height: 6px;
 }
-::-webkit-scrollbar-track {
-  background: transparent;
+.column-scroll::-webkit-scrollbar-track {
+  background: rgba(241, 245, 249, 0.6);
+  border-radius: 9999px;
 }
-::-webkit-scrollbar-thumb {
+.column-scroll::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 9999px;
 }
-::-webkit-scrollbar-thumb:hover {
+.column-scroll::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
-}
-
-/* Pulse Glow Animation for Overdue items */
-@keyframes soft-pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.85; transform: scale(1.02); }
-}
-
-.animate-soft-pulse {
-  animation: soft-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 /* Hide Next.js floating development indicator */
