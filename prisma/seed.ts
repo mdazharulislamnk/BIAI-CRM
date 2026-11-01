@@ -17,12 +17,13 @@ interface CSVRow {
 /**
  * Intelligent helper to deduce course, intent category, language, and suggested reply
  */
-function enrichEnquiry(row: CSVRow) {
+function enrichEnquiry(row: any) {
+  const rawId = row.id || row["\uFEFFid"] || row["﻿id"] || "";
+  const csvId = parseInt(String(rawId), 10) || 0;
   const msg = (row.message || "").toLowerCase();
   const rawMsg = row.message || "";
   const name = row["sender name"] || "";
   const phone = row.phone || "";
-  const csvId = parseInt(row.id, 10);
 
   let interest = "General Enquiry";
   let status = "New";
@@ -170,6 +171,7 @@ async function main() {
     columns: true,
     skip_empty_lines: true,
     trim: true,
+    bom: true,
   }) as CSVRow[];
 
   console.log(`📄 Found ${records.length} records in sample-enquiries.csv`);
