@@ -3,7 +3,8 @@
 ## 📋 Task Overview
 - **Goal:** Production-grade CRM system capturing multi-channel enquiries (WhatsApp, Facebook, Website, Phone call notes) with native Bangla, Banglish, and English intelligence.
 - **Reference Dataset:** `sample-enquiries.csv` (20 sample enquiries with mixed languages and intents).
-- **Status:** **100% COMPLETE (Core Requirements + All Bonus Tasks + Docker)**
+- **Live Demo Link:** [https://biai-crm.vercel.app](https://biai-crm.vercel.app)
+- **Status:** **100% COMPLETE (Core Requirements + All Bonus Tasks + Docker + Vercel Deployment)**
 
 ---
 

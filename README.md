@@ -4,6 +4,15 @@
 
 ---
 
+## 🔗 Live Application & Quick Links
+
+- **🚀 Live Production Web App:** [https://biai-crm.vercel.app](https://biai-crm.vercel.app)
+- **💻 GitHub Source Code:** [https://github.com/mdazharulislamnk/BIAI-CRM](https://github.com/mdazharulislamnk/BIAI-CRM)
+- **🎥 Loom Presentation Video (≤ 5 mins):** [Watch Demo Walkthrough](https://www.loom.com/)
+- **📖 Vercel Deployment Guide:** [`VERCEL_DEPLOYMENT.md`](./VERCEL_DEPLOYMENT.md)
+
+---
+
 ## 1. Title & Overview
 
 The **BIAI CRM** is a full-stack, AI-native customer relationship management system purpose-built for the **Bangladesh Institute of Artificial Intelligence (BIAI)**. 
@@ -437,3 +446,4 @@ Use this exact flow when recording your Loom video:
 | **Developer** | **Md. Azharul Islam** |
 | **GitHub Profile** | [@mdazharulislamnk](https://github.com/mdazharulislamnk) |
 | **Project Repository** | [BIAI-CRM](https://github.com/mdazharulislamnk/BIAI-CRM) |
+| **Live Production App** | [https://biai-crm.vercel.app](https://biai-crm.vercel.app) |
