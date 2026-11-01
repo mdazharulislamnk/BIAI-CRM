@@ -217,6 +217,8 @@ docker compose down
 
 Next.js is developed by Vercel, making Vercel the premier zero-cost hosting platform for this application.
 
+> 📖 **Full Step-by-Step Guide:** See [`VERCEL_DEPLOYMENT.md`](./VERCEL_DEPLOYMENT.md) for detailed deployment walkthrough and post-deployment checklist.
+
 ### Do You Need Docker for Vercel?
 **No.** Vercel uses serverless edge infrastructure that natively compiles Next.js repositories directly from your GitHub account without Docker.
 
