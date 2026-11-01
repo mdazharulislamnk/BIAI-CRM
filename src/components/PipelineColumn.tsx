@@ -3,11 +3,12 @@
 import React from "react";
 import { Enquiry } from "@/lib/types";
 import { EnquiryCard } from "./EnquiryCard";
-import { getStageBadge } from "@/lib/utils";
+import { CheckCircle2, Inbox } from "lucide-react";
 
 interface PipelineColumnProps {
   stage: string;
   enquiries: Enquiry[];
+  totalCount: number;
   onSelectEnquiry: (enquiry: Enquiry) => void;
   onAdvanceStage: (enquiry: Enquiry, nextStage: string, e: React.MouseEvent) => void;
 }
@@ -15,34 +16,60 @@ interface PipelineColumnProps {
 export const PipelineColumn: React.FC<PipelineColumnProps> = ({
   stage,
   enquiries,
+  totalCount,
   onSelectEnquiry,
   onAdvanceStage,
 }) => {
-  const badge = getStageBadge(stage);
+  // Stage styling
+  const getStageMeta = (stg: string) => {
+    switch (stg) {
+      case "New":
+        return { dot: "bg-blue-500", border: "border-blue-200", badge: "bg-blue-50 text-blue-700" };
+      case "Contacted":
+        return { dot: "bg-amber-500", border: "border-amber-200", badge: "bg-amber-50 text-amber-700" };
+      case "Interested":
+        return { dot: "bg-purple-500", border: "border-purple-200", badge: "bg-purple-50 text-purple-700" };
+      case "Paid":
+        return { dot: "bg-emerald-500", border: "border-emerald-200", badge: "bg-emerald-50 text-emerald-700" };
+      case "Lost":
+        return { dot: "bg-slate-400", border: "border-slate-200", badge: "bg-slate-100 text-slate-600" };
+      default:
+        return { dot: "bg-slate-400", border: "border-slate-200", badge: "bg-slate-100 text-slate-700" };
+    }
+  };
+
+  const meta = getStageMeta(stage);
+  const percentage = totalCount > 0 ? Math.round((enquiries.length / totalCount) * 100) : 0;
 
   return (
-    <div className="flex flex-col flex-1 min-w-[270px] max-w-xs bg-slate-100/70 rounded-2xl p-3 border border-slate-200/70 h-[calc(100vh-270px)] min-h-[500px]">
+    <div className="w-full flex flex-col bg-slate-100/80 rounded-2xl p-2.5 sm:p-3 border border-slate-200/90 shadow-2xs">
       {/* Column Header */}
-      <div className="flex items-center justify-between px-2 py-2 mb-2">
+      <div className="flex items-center justify-between px-2.5 py-2 mb-2 bg-white/90 rounded-xl border border-slate-200/80 shadow-2xs">
         <div className="flex items-center space-x-2">
-          <span className={`w-2.5 h-2.5 rounded-full ${
-            stage === 'New' ? 'bg-blue-500' :
-            stage === 'Contacted' ? 'bg-amber-500' :
-            stage === 'Interested' ? 'bg-purple-500' :
-            stage === 'Paid' ? 'bg-emerald-500' : 'bg-slate-400'
-          }`} />
-          <h3 className="font-semibold text-slate-800 text-sm tracking-tight">{stage}</h3>
+          <span className={`w-2.5 h-2.5 rounded-full ${meta.dot} shadow-xs shrink-0`} />
+          <h3 className="font-bold text-slate-900 text-sm tracking-tight truncate">{stage}</h3>
         </div>
-        <span className="text-xs font-bold text-slate-600 bg-white px-2 py-0.5 rounded-full border border-slate-200 shadow-2xs">
-          {enquiries.length}
-        </span>
+        <div className="flex items-center space-x-1.5 shrink-0">
+          <span className="text-[11px] text-slate-400 font-medium">{percentage}%</span>
+          <span className="text-xs font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200">
+            {enquiries.length}
+          </span>
+        </div>
       </div>
 
-      {/* Cards Scroll Container */}
-      <div className="flex-1 overflow-y-auto space-y-2.5 pr-1">
+      {/* Cards Scroll Container: Vertical scroll only, fills column width */}
+      <div className="flex-1 overflow-y-auto space-y-2.5 pr-0.5 max-h-[calc(100vh-300px)] min-h-[380px]">
         {enquiries.length === 0 ? (
-          <div className="h-32 border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center text-xs text-slate-400">
-            No leads in {stage}
+          <div className="h-40 border-2 border-dashed border-slate-200/80 rounded-xl flex flex-col items-center justify-center p-4 text-center">
+            {stage === "Paid" ? (
+              <CheckCircle2 className="w-7 h-7 text-emerald-400 mb-1" />
+            ) : (
+              <Inbox className="w-7 h-7 text-slate-300 mb-1" />
+            )}
+            <p className="text-xs font-semibold text-slate-500">No leads in {stage}</p>
+            <p className="text-[10px] text-slate-400 mt-0.5">
+              {stage === "Paid" ? "Advance leads to close" : "Leads move here when updated"}
+            </p>
           </div>
         ) : (
           enquiries.map((enquiry) => (

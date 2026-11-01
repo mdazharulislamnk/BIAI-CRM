@@ -5,6 +5,7 @@ import { Navbar } from "@/components/Navbar";
 import { StatsOverview } from "@/components/StatsOverview";
 import { FilterBar } from "@/components/FilterBar";
 import { PipelineBoard } from "@/components/PipelineBoard";
+import { TableView } from "@/components/TableView";
 import { AIIntakeModal } from "@/components/AIIntakeModal";
 import { EnquiryDetailModal } from "@/components/EnquiryDetailModal";
 import { WeeklySummaryModal } from "@/components/WeeklySummaryModal";
@@ -15,11 +16,15 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [isResetting, setIsResetting] = useState(false);
 
+  // View Mode: Kanban Board vs Data Table
+  const [viewMode, setViewMode] = useState<"board" | "table">("board");
+
   // Filters
   const [search, setSearch] = useState("");
   const [channel, setChannel] = useState("ALL");
   const [interest, setInterest] = useState("ALL");
   const [category, setCategory] = useState("ALL");
+  const [status, setStatus] = useState("ALL");
 
   // Modals
   const [isIntakeOpen, setIsIntakeOpen] = useState(false);
@@ -35,6 +40,7 @@ export default function Home() {
       if (channel !== "ALL") params.set("channel", channel);
       if (interest !== "ALL") params.set("interest", interest);
       if (category !== "ALL") params.set("category", category);
+      if (status !== "ALL") params.set("status", status);
 
       const res = await fetch(`/api/enquiries?${params.toString()}`);
       const data = await res.json();
@@ -46,13 +52,13 @@ export default function Home() {
     } finally {
       setIsLoading(false);
     }
-  }, [search, channel, interest, category]);
+  }, [search, channel, interest, category, status]);
 
   useEffect(() => {
     fetchEnquiries();
   }, [fetchEnquiries]);
 
-  // Handle stage change (e.g. from New -> Contacted)
+  // Handle stage change
   const handleUpdateStage = async (id: string, newStage: PipelineStage | string) => {
     try {
       const res = await fetch(`/api/enquiries/${id}`, {
@@ -62,7 +68,6 @@ export default function Home() {
       });
       const data = await res.json();
       if (data.success) {
-        // Update local state smoothly
         setEnquiries((prev) =>
           prev.map((item) => (item.id === id ? data.enquiry : item))
         );
@@ -105,7 +110,8 @@ export default function Home() {
   };
 
   // Handle deleting lead
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     if (!confirm("Are you sure you want to delete this enquiry?")) return;
     try {
       const res = await fetch(`/api/enquiries/${id}`, { method: "DELETE" });
@@ -127,6 +133,7 @@ export default function Home() {
       const res = await fetch("/api/seed", { method: "POST" });
       const data = await res.json();
       if (data.success) {
+        handleClearFilters();
         await fetchEnquiries();
       }
     } catch (err) {
@@ -137,18 +144,19 @@ export default function Home() {
   };
 
   const hasActiveFilters =
-    search !== "" || channel !== "ALL" || interest !== "ALL" || category !== "ALL";
+    search !== "" || channel !== "ALL" || interest !== "ALL" || category !== "ALL" || status !== "ALL";
 
   const handleClearFilters = () => {
     setSearch("");
     setChannel("ALL");
     setInterest("ALL");
     setCategory("ALL");
+    setStatus("ALL");
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
-      {/* Top Navigation */}
+    <div className="min-h-screen flex flex-col bg-slate-50/70 w-full overflow-x-hidden antialiased">
+      {/* Top Navigation: 100% Full-Screen Width */}
       <Navbar
         onOpenIntake={() => setIsIntakeOpen(true)}
         onOpenSummary={() => setIsSummaryOpen(true)}
@@ -156,22 +164,29 @@ export default function Home() {
         isResetting={isResetting}
       />
 
-      {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Stats Overview Bar */}
+      {/* Main Full-Width Container */}
+      <main className="flex-1 w-full px-3 sm:px-6 lg:px-8 py-5">
+        {/* Interactive Stats Overview Bar */}
         <StatsOverview
           enquiries={enquiries}
           onFilterOverdue={() => {
-            // Filter to new/contacted
+            // Filter to overdue leads
             setCategory("ALL");
             setInterest("ALL");
+            setStatus("New");
           }}
           onFilterSupport={() => {
             setCategory("SUPPORT");
+            setStatus("ALL");
           }}
+          onFilterPaid={() => {
+            setStatus("Paid");
+            setCategory("ALL");
+          }}
+          onResetFilters={handleClearFilters}
         />
 
-        {/* Filters & Search Toolbar */}
+        {/* Filter Toolbar with View Mode Switcher */}
         <FilterBar
           search={search}
           onSearchChange={setSearch}
@@ -183,18 +198,29 @@ export default function Home() {
           onCategoryChange={setCategory}
           onClearFilters={handleClearFilters}
           hasActiveFilters={hasActiveFilters}
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+          totalFiltered={enquiries.length}
         />
 
-        {/* Kanban Pipeline Board */}
+        {/* Main Display: Kanban Board or Table View */}
         {isLoading && enquiries.length === 0 ? (
-          <div className="h-64 flex items-center justify-center text-slate-400 text-sm">
-            Loading pipeline leads...
+          <div className="h-72 flex flex-col items-center justify-center text-slate-400 space-y-2">
+            <div className="w-8 h-8 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin" />
+            <p className="text-sm font-medium">Loading live pipeline...</p>
           </div>
-        ) : (
+        ) : viewMode === "board" ? (
           <PipelineBoard
             enquiries={enquiries}
             onSelectEnquiry={(e) => setSelectedEnquiry(e)}
             onAdvanceStage={handleAdvanceStage}
+          />
+        ) : (
+          <TableView
+            enquiries={enquiries}
+            onSelectEnquiry={(e) => setSelectedEnquiry(e)}
+            onAdvanceStage={handleAdvanceStage}
+            onDeleteEnquiry={handleDelete}
           />
         )}
       </main>
@@ -212,7 +238,7 @@ export default function Home() {
         onClose={() => setSelectedEnquiry(null)}
         onUpdateStage={handleUpdateStage}
         onUpdateNotes={handleUpdateNotes}
-        onDelete={handleDelete}
+        onDelete={(id) => handleDelete(id)}
       />
 
       <WeeklySummaryModal
