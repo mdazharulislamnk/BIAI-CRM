@@ -165,7 +165,7 @@ export default function Home() {
       />
 
       {/* Main Container: 100% of remaining screen height, zero page scroll */}
-      <main className="flex-1 min-h-0 w-full px-3 sm:px-6 py-2.5 flex flex-col overflow-hidden">
+      <main className="flex-1 min-h-0 w-full px-3 sm:px-6 pt-2 pb-3 flex flex-col overflow-hidden">
         {/* Compact Stats Overview Bar (Fixed height) */}
         <StatsOverview
           enquiries={enquiries}
