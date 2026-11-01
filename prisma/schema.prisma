@@ -1,0 +1,37 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Enquiry {
+  id              String    @id @default(cuid())
+  csvId           Int?      // Original row ID from sample-enquiries.csv (1 to 20)
+  channel         String    // WhatsApp, Facebook Messenger, Facebook comment, Website form, Phone call note
+  receivedAt      DateTime  // Original or intake timestamp
+  senderName      String?
+  phone           String?
+  message         String    // Raw message text
+  
+  // Categorization & Intent
+  interest        String    // 3-Day Bootcamp, AI Fellowship, Corporate Training, General Enquiry
+  status          String    @default("New") // New, Contacted, Interested, Paid, Lost
+  category        String    @default("LEAD") // LEAD, SUPPORT, SPAM, JOB_SEEKER
+  
+  // AI Outputs
+  detectedLang    String?   // Banglish, Bangla, English
+  suggestedReply  String?   // AI-drafted reply matching sender tone
+  
+  // Follow-up & Audit
+  lastContactedAt DateTime?
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([status])
+  @@index([category])
+  @@index([phone])
+}
