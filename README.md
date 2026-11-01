@@ -7,8 +7,6 @@
 ## 🔗 Live Application & Quick Links
 
 - **🚀 Live Production Web App:** [https://biai-crm.vercel.app](https://biai-crm.vercel.app)
-- **💻 GitHub Source Code:** [https://github.com/mdazharulislamnk/BIAI-CRM](https://github.com/mdazharulislamnk/BIAI-CRM)
-- **🎥 Loom Presentation Video (≤ 5 mins):** [Watch Demo Walkthrough](https://www.loom.com/)
 - **📖 Vercel Deployment Guide:** [`VERCEL_DEPLOYMENT.md`](./VERCEL_DEPLOYMENT.md)
 
 ---
