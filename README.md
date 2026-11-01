@@ -1,7 +1,6 @@
 # BIAI CRM — AI-Powered Multi-Channel Lead Intelligence System
 
-> **BIAI AI Engineering Intern Assessment — Round 2 (Task 1)**  
-> An intelligent, production-grade CRM platform engineered to ingest unstructured enquiries across WhatsApp, Facebook Messenger, Facebook comments, Website forms, and Phone call notes with native understanding of Bangla, Banglish, and English dialects.
+> An intelligent, production-grade customer relationship management platform engineered to ingest unstructured customer enquiries across WhatsApp, Facebook Messenger, Facebook comments, Website forms, and Phone call notes with native understanding of Bangla, Banglish, and English dialects.
 
 ---
 
@@ -20,6 +19,7 @@ BIAI CRM delivers:
 4. **Culturally Authentic Tone-Matched Reply Generator:** Generates context-aware replies matching the customer's exact linguistic tone (natural Banglish for Banglish messages, polite Bengali for Bangla messages, and professional English for English enquiries) with 1-click WhatsApp redirection.
 5. **Dynamic 48-Hour Overdue Follow-up Tracker:** Evaluates elapsed time to flag stagnant leads needing immediate attention.
 6. **AI Weekly Executive Briefing:** Synthesizes pipeline distribution, conversion velocity, and operational bottlenecks into a markdown report for BIAI leadership.
+7. **Dual View Modes:** Seamlessly toggle between a visual **5-Stage Kanban Board** and a high-density **Data Table View**.
 
 ---
 
@@ -27,10 +27,11 @@ BIAI CRM delivers:
 
 | Layer | Technologies Used | Description & Purpose |
 |---|---|---|
-| **Frontend** | React 19, Next.js 15 (App Router), Tailwind CSS, Lucide React | Clean, responsive modern SaaS UI with Kanban pipeline, modal drawers, and responsive badge components. |
+| **Frontend** | React 19, Next.js 15 (App Router), Tailwind CSS, Lucide React | Clean, responsive modern SaaS UI with full-screen Kanban pipeline, data table view, and modal drawers. |
 | **Backend & API** | Next.js Server Endpoints (Node.js runtime) | Type-safe RESTful API routes for CRUD operations, filtering, and stage transitions. |
-| **Database & ORM** | SQLite, Prisma ORM 5.22 | Persistent local relational database stored on disk (`prisma/dev.db`). Provides schema migrations, ACID transactions, and zero-cloud local evaluation. |
+| **Database & ORM** | SQLite, Prisma ORM 5.22 | Persistent local relational database stored on disk (`prisma/dev.db`). Provides schema migrations, ACID transactions, and zero-cloud evaluation. |
 | **AI / LLM Engine** | Google GenAI SDK (`gemini-3.5-flash-lite`, with `gemini-3.8-flash` fallback) | Fast, free-tier workhorse LLM optimized for structured extraction, multilingual South Asian understanding, and tone synthesis. |
+| **Containerization** | Docker, Docker Compose (Alpine Node 22) | Single-command containerized execution on any OS with automated database migration and seeding. |
 | **Data Ingestion** | `csv-parse/sync`, TypeScript Seeder (`prisma/seed.ts`) | Automated idempotent ingestion engine parsing `sample-enquiries.csv` directly into the relational database. |
 
 ---
@@ -44,13 +45,15 @@ BIAI CRM delivers:
 - [5. Prerequisites](#5-prerequisites)
 - [6. Environment Variables](#6-environment-variables)
 - [7. A to Z Setup Guide (Manual Installation)](#7-a-to-z-setup-guide-manual-installation)
-- [8. Architecture & Design Tradeoffs](#8-architecture--design-tradeoffs)
-- [9. Relational Data Model (Prisma / SQLite)](#9-relational-data-model-prisma--sqlite)
-- [10. Feature Matrix & Task Completion](#10-feature-matrix--task-completion)
-- [11. Complete API Reference](#11-complete-api-reference)
-- [12. Problems Faced & Solutions](#12-problems-faced--solutions)
-- [13. 5-Minute Loom Presentation Script](#13-5-minute-loom-presentation-script)
-- [14. Developer Signature](#14-developer-signature)
+- [8. A to Z Setup Guide (Docker Compose)](#8-a-to-z-setup-guide-docker-compose)
+- [9. 100% Free Cloud Deployment (Vercel Guide)](#9-100-free-cloud-deployment-vercel-guide)
+- [10. Architecture & Design Tradeoffs](#10-architecture--design-tradeoffs)
+- [11. Relational Data Model (Prisma / SQLite)](#11-relational-data-model-prisma--sqlite)
+- [12. Feature Matrix & Task Completion](#12-feature-matrix--task-completion)
+- [13. Complete API Reference](#13-complete-api-reference)
+- [14. Problems Faced & Solutions](#14-problems-faced--solutions)
+- [15. 5-Minute Loom Presentation Script](#15-5-minute-loom-presentation-script)
+- [16. Developer Signature](#16-developer-signature)
 
 ---
 
@@ -61,6 +64,9 @@ BIAI-CRM/
 ├── sample-enquiries.csv                # Source reference dataset (20 sample enquiries)
 ├── DONE.md                             # Live task & deliverable tracking checklist
 ├── README.md                           # Comprehensive documentation & engineering report
+├── Dockerfile                          # Multi-stage production container build (Node 22 Alpine)
+├── docker-compose.yml                  # Single-command container orchestration
+├── .dockerignore                       # Exclusions for Docker context
 ├── .env                                # Local environment config (DATABASE_URL & GEMINI_API_KEY)
 ├── .env.example                        # Template for evaluators
 ├── .gitignore                          # Git exclusions (node_modules, dev.db, .env)
@@ -93,18 +99,19 @@ BIAI-CRM/
     │   │
     │   ├── globals.css                # Base Tailwind styles & custom scrollbars
     │   ├── layout.tsx                 # Root layout with font configuration & metadata
-    │   └── page.tsx                   # Main Dashboard (Kanban Pipeline, Stats, Filter bar)
+    │   └── page.tsx                   # Main Dashboard (Kanban Pipeline, Stats, Filter bar, Table View)
     │
     ├── components/
-    │   ├── Navbar.tsx                 # Header with "AI Quick Intake" and "AI Weekly Summary" triggers
-    │   ├── StatsOverview.tsx          # Key metrics: Total, Overdue (>48h), Paid, Support/Spam
-    │   ├── FilterBar.tsx              # Multi-channel, program, and intent filter toolbar
+    │   ├── Navbar.tsx                 # Floating top header with "AI Quick Intake" & "AI Weekly Summary"
+    │   ├── StatsOverview.tsx          # Compact metrics: Total, Overdue (>48h), Paid, Support/Spam
+    │   ├── FilterBar.tsx              # Multi-channel, program, intent toolbar + Board/Table switcher
     │   ├── PipelineBoard.tsx          # 5-stage Kanban board (New, Contacted, Interested, Paid, Lost)
-    │   ├── PipelineColumn.tsx         # Column wrapper with lead count badges
-    │   ├── EnquiryCard.tsx            # Card with channel icons, overdue badges, and stage advancers
+    │   ├── PipelineColumn.tsx         # Column wrapper with independent inner box scrolling
+    │   ├── TableView.tsx              # High-density data table view for power counselors
+    │   ├── EnquiryCard.tsx            # Compact card with channel icons, overdue badges, stage advancers
     │   ├── AIIntakeModal.tsx          # "Paste Raw Message" drawer with Gemini extraction & demo presets
     │   ├── EnquiryDetailModal.tsx     # Inspector: message, 1-click copy AI reply, WhatsApp link, notes
-    │   └── WeeklySummaryModal.tsx     # Modal displaying AI-generated executive briefing
+    │   └── WeeklySummaryModal.tsx     # Modal displaying AI-generated executive briefing with rich formatting
     │
     └── lib/
         ├── db.ts                      # Prisma client singleton (connection pooling)
@@ -119,8 +126,8 @@ BIAI-CRM/
 
 - **Node.js:** `v20.x` or `v22.x` (Recommended: `v22.11.0` or higher)
 - **npm:** `v10.x` or higher
-- **Git:** Installed on local machine
-- **Google Gemini API Key:** Free key obtainable in 1 minute from [Google AI Studio](https://aistudio.google.com/) *(optional for basic evaluation; app includes intelligent fallback)*
+- **Docker & Docker Compose:** Optional (For containerized deployment)
+- **Google Gemini API Key:** Free key obtainable in 1 minute from [Google AI Studio](https://aistudio.google.com/) *(optional for basic offline evaluation; app includes intelligent rule fallback)*
 
 ---
 
@@ -146,7 +153,8 @@ DATABASE_URL="file:./dev.db"
 
 ### Step 1: Clone or Navigate to the Repository
 ```bash
-cd C:\GitHubProject\BIAI-CRM
+git clone https://github.com/mdazharulislamnk/BIAI-CRM.git
+cd BIAI-CRM
 ```
 
 ### Step 2: Configure Environment Variables
@@ -180,14 +188,64 @@ Open [http://localhost:3000](http://localhost:3000) in your web browser. The CRM
 
 ---
 
-## 8. Architecture & Design Tradeoffs
+## 8. A to Z Setup Guide (Docker Compose)
+
+For a fully isolated environment without installing Node.js, Prisma, or local dependencies:
+
+### Step 1: Install Docker Desktop
+Download and install [Docker Desktop](https://www.docker.com/products/docker-desktop/).
+
+### Step 2: Configure Environment Variables
+Ensure `.env` exists in the root directory with your `GEMINI_API_KEY`.
+
+### Step 3: Build and Run
+```bash
+docker compose up --build
+```
+Docker will build the multi-stage Alpine Node 22 container, run Prisma migrations, seed the sample dataset, and launch the production server.
+
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+### Step 4: Stopping the Container
+```bash
+docker compose down
+```
+
+---
+
+## 9. 100% Free Cloud Deployment (Vercel Guide)
+
+Next.js is developed by Vercel, making Vercel the premier zero-cost hosting platform for this application.
+
+### Do You Need Docker for Vercel?
+**No.** Vercel uses serverless edge infrastructure that natively compiles Next.js repositories directly from your GitHub account without Docker.
+
+### Step-by-Step Vercel Deployment ($0 Free):
+1. **Push your code to GitHub:**
+   ```bash
+   git push -u origin main
+   ```
+2. **Import into Vercel:**
+   - Go to [vercel.com](https://vercel.com) and log in with GitHub.
+   - Click **"Add New Project"** ➔ Select your **`BIAI-CRM`** repository.
+3. **Configure Environment Variables:**
+   Under **Environment Variables**, add:
+   - `GEMINI_API_KEY`: Your Google Gemini API Key.
+   - `DATABASE_URL`: `file:./dev.db` *(or connect a free PostgreSQL database like Supabase or Neon)*.
+4. **Deploy:**
+   - Click **"Deploy"**.
+   - In ~60 seconds, Vercel gives you a live production URL: `https://biai-crm.vercel.app`.
+
+---
+
+## 10. Architecture & Design Tradeoffs
 
 ### 1. SQLite with Prisma ORM vs. In-Memory Mockup
-- **The Tradeoff:** Some prototypes store leads in JavaScript memory (`useState` or browser `localStorage`), which vanishes upon page refresh or across different team members. 
+- **The Tradeoff:** Some prototypes store leads in temporary JavaScript memory (`useState` or browser `localStorage`), which vanishes upon page refresh or across different team members. 
 - **The Decision:** We implemented a real relational SQLite database managed through Prisma ORM (`prisma/dev.db`). This ensures true ACID persistence, relational querying, and index-accelerated filters. If BIAI chooses to deploy to PostgreSQL/Supabase, changing `provider = "sqlite"` to `"postgresql"` takes one line of code.
 
-### 2. Multi-Tier Intelligent Triage (Solving the README Hint)
-- **The Problem:** The sample data contains non-sales enquiries: Row 11 is a crypto scam bot; Row 7 and 16 are urgent support issues (a bKash payment verification and an angry cancellation demand); Row 20 is an AI intern job applicant. Dumping these into "New Sales Leads" wastes counselor time.
+### 2. Multi-Tier Intelligent Triage
+- **The Problem:** Incoming enquiries contain non-sales items: crypto scams, urgent bKash payment verification, refund demands, and job applicants. Dumping these into "New Sales Leads" wastes counselor time.
 - **The Solution:** Our AI extraction pipeline classifies incoming messages into 4 distinct intent categories:
   - `LEAD`: Enters the active sales pipeline (`New` ➔ `Contacted` ➔ `Interested` ➔ `Paid` ➔ `Lost`).
   - `SUPPORT`: Flagged with **🚨 Urgent Support** badge for accounts/counselor escalation.
@@ -195,7 +253,7 @@ Open [http://localhost:3000](http://localhost:3000) in your web browser. The CRM
   - `JOB_SEEKER`: Routed to HR with an automated careers referral.
 
 ### 3. Gemini 3.5 Flash-Lite as Primary Workhorse
-- **The Tradeoff:** Frontier models (Gemini 1.5 Pro, GPT-4o) have higher latency and strict free-tier rate limits. 
+- **The Tradeoff:** Frontier models have high latency and strict free-tier rate limits. 
 - **The Decision:** We configured `gemini-3.5-flash-lite` with fallback to `gemini-3.8-flash` and `gemini-2.0-flash`. Flash-Lite provides sub-second latency (~800ms), zero token waste on internal reasoning overhead, and native comprehension of mixed South Asian languages (Bangla, Banglish, and English).
 
 ### 4. Dynamic 48-Hour Overdue Date Math
@@ -203,7 +261,7 @@ Open [http://localhost:3000](http://localhost:3000) in your web browser. The CRM
 
 ---
 
-## 9. Relational Data Model (Prisma / SQLite)
+## 11. Relational Data Model (Prisma / SQLite)
 
 ```prisma
 model Enquiry {
@@ -238,23 +296,25 @@ model Enquiry {
 
 ---
 
-## 10. Feature Matrix & Task Completion
+## 12. Feature Matrix & Task Completion
 
-| Requirement from BIAI Brief | Implementation Details | Status |
+| Requirement | Implementation Details | Status |
 |---|---|---|
 | **1. Saves each enquiry** | Captures Name, Phone, Channel, Course Interest, and Status in persistent SQLite via Prisma ORM. | ✅ Complete |
 | **2. Reads pasted message via AI** | "Quick AI Intake" modal uses Gemini to extract fields automatically from raw unstructured text. | ✅ Complete |
 | **3. Suggests tone-matched reply** | Generates authentic replies in Banglish, Bangla, or English matching the customer's dialect. Includes 1-click copy & WhatsApp link. | ✅ Complete |
 | **4. Simple 5-stage pipeline** | Kanban board displaying `New`, `Contacted`, `Interested`, `Paid`, and `Lost` with quick stage advancement. | ✅ Complete |
 | **Handling of 20 Sample Enquiries** | All 20 enquiries from `sample-enquiries.csv` loaded, typed, and triaged. | ✅ Complete |
-| **Triage Non-Sales Enquiries (README hint)** | Distinguishes Sales Leads from Support Issues (bKash/refund), Spam (crypto), and Job Seekers. | ✅ Complete |
+| **Triage Non-Sales Enquiries** | Distinguishes Sales Leads from Support Issues (bKash/refund), Spam (crypto), and Job Seekers. | ✅ Complete |
 | **Bonus 1: 48-Hour Overdue Reminder** | Real-time calculation flags leads in `New`/`Contacted` older than 48h with a visual indicator and counter. | ✅ Complete |
 | **Bonus 2: AI Weekly Summary** | 1-click executive briefing synthesizing live pipeline distribution, conversions, and bottlenecks. | ✅ Complete |
+| **Bonus: Dual View Mode** | Instant toggle between Kanban Board View and High-Density Table View. | ✅ Complete |
+| **Bonus: Containerization** | Single-command startup via `Dockerfile` and `docker-compose.yml`. | ✅ Complete |
 | **In-App Reset Capability** | 1-click "Reset Sample Data" button to restore database to original 20 records for repeated demos. | ✅ Complete |
 
 ---
 
-## 11. Complete API Reference
+## 13. Complete API Reference
 
 ### 1. List Enquiries (with Search & Filters)
 - **Endpoint:** `GET /api/enquiries`
@@ -310,7 +370,7 @@ model Enquiry {
 
 ---
 
-## 12. Problems Faced & Solutions
+## 14. Problems Faced & Solutions
 
 ### 1. Dialect Mixing & Romanized Banglish Parsing
 - **Problem:** Many Bangladeshi students write in colloquial Romanized Banglish (e.g., *"Vai class gula live hoy naki recorded? Recording pawa jay?"*). Traditional NLP classifiers fail because English tokenizers misclassify Banglish words as typos or gibberish.
@@ -330,7 +390,7 @@ model Enquiry {
 
 ---
 
-## 13. 5-Minute Loom Presentation Script
+## 15. 5-Minute Loom Presentation Script
 
 Use this exact flow when recording your Loom video:
 
@@ -344,6 +404,7 @@ Use this exact flow when recording your Loom video:
   - Click on **Row 7 (Farzana Rahman)** and show how the AI classified it as **🚨 Urgent Support (bKash verification)** rather than a sales lead.
   - Click on **Row 16 (Habibur Rahman)** and show the empathetic refund de-escalation reply.
   - Advance a card from `New` ➔ `Contacted` ➔ `Interested`.
+  - Switch to **Table View** to show high-density sorting.
 
 - **Minute 2:30 - 3:45: AI Quick Intake Demo**
   - Click the **"AI Quick Intake"** button.
@@ -359,19 +420,18 @@ Use this exact flow when recording your Loom video:
 
 - **Minute 3:45 - 4:30: AI Weekly Executive Summary (Bonus)**
   - Click **"AI Weekly Summary"**.
-  - Show Gemini generating an executive report analyzing lead distribution, corporate training inquiries, and the list of overdue follow-ups.
+  - Show Gemini generating an executive report with rendered markdown, analyzing lead distribution, corporate training inquiries, and the list of overdue follow-ups.
 
 - **Minute 4:30 - 5:00: Architecture Decisions & Wrap-up**
-  - Explain why you chose Next.js 15, SQLite with Prisma, and Gemini 3.5 Flash-Lite (zero-cost, sub-second speed, local database persistence).
-  - Conclude with your readiness for the live interview call.
+  - Explain why you chose Next.js 15, SQLite with Prisma, Docker containerization, and Gemini 3.5 Flash-Lite (zero-cost, sub-second speed, local database persistence).
+  - Conclude with your readiness for questions and live modifications.
 
 ---
 
-## 14. Developer Signature
+## 16. Developer Signature
 
 | Information | Details |
 |---|---|
-| **Candidate** | **Md. Azharul Islam** |
+| **Developer** | **Md. Azharul Islam** |
 | **GitHub Profile** | [@mdazharulislamnk](https://github.com/mdazharulislamnk) |
-| **Assessment** | BIAI AI Engineering Intern (Round 2) |
 | **Project Repository** | [BIAI-CRM](https://github.com/mdazharulislamnk/BIAI-CRM) |

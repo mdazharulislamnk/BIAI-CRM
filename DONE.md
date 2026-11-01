@@ -1,10 +1,9 @@
 # BIAI CRM — Task Checklist & Deliverables (`DONE.md`)
 
 ## 📋 Task Overview
-- **Track:** Task 1: BIAI CRM
 - **Goal:** Production-grade CRM system capturing multi-channel enquiries (WhatsApp, Facebook, Website, Phone call notes) with native Bangla, Banglish, and English intelligence.
 - **Reference Dataset:** `sample-enquiries.csv` (20 sample enquiries with mixed languages and intents).
-- **Status:** **100% COMPLETE (Core Requirements + All Bonus Tasks)**
+- **Status:** **100% COMPLETE (Core Requirements + All Bonus Tasks + Docker)**
 
 ---
 
@@ -60,13 +59,20 @@
 - [x] **Bonus 2: AI Weekly Executive Summary**
   - [x] 1-click "AI Weekly Summary" button in navbar
   - [x] Gemini analyzes live database distribution, channel volume, and bottlenecks
-  - [x] Generates an executive briefing modal for BIAI management
+  - [x] Generates an executive briefing modal with rich Markdown styling and KPI ribbon
+
+- [x] **Bonus 3: Dual View Mode**
+  - [x] Instant toggle between visual Kanban Board and high-density Data Table View
+
+- [x] **Bonus 4: Docker & Docker Compose Containerization**
+  - [x] Multi-stage Alpine Node 22 `Dockerfile`
+  - [x] Single-command spin-up via `docker-compose.yml` with persistent volume
 
 ---
 
 ## 🛠️ 4. Professional Developer Hygiene
 
 - [x] Clean Git commit history tracking every milestone
-- [x] Production-grade `README.md` following standard format (Architecture tradeoffs, API docs, problems faced & solutions, Loom script)
+- [x] Production-grade `README.md` (no assessment tags, full Docker & Vercel guides, Loom script)
 - [x] In-app "Reset to Sample Data" button to cleanly refresh database for Loom demos
 - [x] 5-minute Loom video presentation script & preparation guide
